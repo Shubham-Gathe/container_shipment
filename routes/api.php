@@ -18,6 +18,6 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
-    Route::put('/users/{user}', [UserController::class, 'update']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+    Route::put('/users/{user}', [UserController::class, 'update']);     //id
+    Route::delete('/users/{user}', [UserController::class, 'destroy']); //id
 });
