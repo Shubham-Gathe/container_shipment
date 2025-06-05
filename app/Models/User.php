@@ -36,4 +36,8 @@ class User extends Authenticatable
     {
         $this->notify(new \App\Notifications\ResetPasswordNotification($token));
     }
+    public function driver()
+    {
+        return $this->hasOne(Driver::class);
+    }
 }

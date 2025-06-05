@@ -11,7 +11,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::all();
-
+        
         if ($request->wantsJson()) {
             return response()->json($users);
         }
@@ -30,15 +30,23 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
-            'role' => 'required|in:admin,caller,executive',
+            'role' => 'required|in:admin,caller,executive,driver',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
 
+        if ($validated['role'] === 'driver') {
+            $driverValidated = $request->validate([
+                'license_number' => 'required|string',
+                'vehicle_type' => 'nullable|string',
+            ]);
+            $user->driver()->create($driverValidated);
+        }
+
         if ($request->wantsJson()) {
-            return response()->json($user, 201);
+            return response()->json($user->load('driver'), 201);
         }
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
@@ -61,22 +69,38 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|confirmed|min:8',
-            'role' => 'required|in:admin,caller,executive',
-        ]);
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|confirmed|min:8',
+        'role' => 'required|in:admin,caller,executive,driver',
+    ]);
 
-        if (!empty($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
+    if (!empty($validated['password'])) {
+        $validated['password'] = Hash::make($validated['password']);
+    } else {
+        unset($validated['password']);
+    }
+
+    $user->update($validated);
+
+        // Sync driver info
+        if ($validated['role'] === 'driver') {
+            $driverValidated = $request->validate([
+                'license_number' => 'required|string',
+                'vehicle_type' => 'nullable|string',
+            ]);
+
+            if ($user->driver) {
+                $user->driver->update($driverValidated);
+            } else {
+                $user->driver()->create($driverValidated);
+            }
         } else {
-            unset($validated['password']);
+            // Optionally delete driver info if role was changed from driver to another
+            $user->driver()?->delete();
         }
-
-        $user->update($validated);
-
         if ($request->wantsJson()) {
-            return response()->json($user);
+            return response()->json($user->load('driver'));
         }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');

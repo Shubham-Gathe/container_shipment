@@ -26,10 +26,16 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // Create token
-        $token = $user->createToken('api-token')->plainTextToken;
+       $tokenResult = $user->createToken('api-token');
+       $token = $tokenResult->plainTextToken;
+
+        
+        $tokenResult->accessToken->expires_at = now()->addHours(2);
+        $tokenResult->accessToken->save();
 
         return response()->json([
             'token' => $token,
+            'expires_at' => $tokenResult->accessToken->expires_at,
             'user' => $user,
         ]);
     }

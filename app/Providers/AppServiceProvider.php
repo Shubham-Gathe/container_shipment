@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Providers;
-
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
+use App\Models\User;
+use App\Policies\UserPolicy;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,4 +26,7 @@ class AppServiceProvider extends ServiceProvider
             return config('app.frontend_url') . '/reset-password?token=' . $token . '&email=' . urlencode($notifiable->email);
         });
     }
+    protected $policies = [
+        User::class => UserPolicy::class,
+    ];
 }
