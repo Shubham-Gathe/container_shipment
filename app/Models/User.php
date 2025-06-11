@@ -40,4 +40,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Driver::class);
     }
+    public function restaurants()
+    {
+        return $this->belongsToMany(Restaurant::class, 'manager_restaurant')->withTimestamps();
+    }
+    public function managedRestaurants()
+    {
+        return $this->belongsToMany(Restaurant::class, 'manager_restaurant', 'user_id', 'restaurant_id');
+    }
 }

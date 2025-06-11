@@ -11,20 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('containers', function (Blueprint $table) {
-            $table->id();
-            $table->enum('status', ['available', 'in_transit', 'delivered'])->default('available');
-            $table->timestamps();
-        });
+      Schema::table('users', function (Blueprint $table) {
+           $table->enum('role', ['admin', 'manager', 'driver'])->change(); 
+     });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('containers');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };
-

@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('containers', function (Blueprint $table) {
+        Schema::create('notification', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['available', 'in_transit', 'delivered'])->default('available');
             $table->timestamps();
+            $table->string('title');
+            $table->text('body');
+            $table->string('type'); // 'order', 'driver', 'restaurant', etc.
+            $table->string('status')->default('unread'); // 'unread', 'read', 'archived'
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('containers');
+        Schema::dropIfExists('notification');
     }
 };
-

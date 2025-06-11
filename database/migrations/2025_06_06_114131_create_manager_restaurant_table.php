@@ -11,20 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('containers', function (Blueprint $table) {
+      Schema::create('manager_restaurant', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['available', 'in_transit', 'delivered'])->default('available');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('containers');
+        Schema::dropIfExists('manager_restaurant');
     }
 };
-

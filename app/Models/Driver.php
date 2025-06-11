@@ -11,8 +11,10 @@ class Driver extends Model
         'vehicle_type',
         'license_plate',
         'status',
-        'user_id',
-        'vehilce_number',
+        'phone',
+        'name',
+        'license_number',   
+        'vehicle_number',
     ];
 
     protected $casts = [
@@ -22,5 +24,9 @@ class Driver extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
