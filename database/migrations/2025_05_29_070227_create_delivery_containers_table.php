@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('delivery_containers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('delivery_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('delivery_id')->constrained()->onDelete('cascade');
             $table->foreignId('container_id')->constrained()->onDelete('cascade');
             $table->timestamp('scanned_at')->nullable();
             $table->text('notes')->nullable();

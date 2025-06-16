@@ -22,12 +22,12 @@ class AuthController extends Controller
                 'message' => 'Invalid credentials'
             ], 401);
         }
-
+        
         $user = Auth::user();
 
         // Create token
-       $tokenResult = $user->createToken('api-token');
-       $token = $tokenResult->plainTextToken;
+        $tokenResult = $user->createToken('api-token');
+        $token = $tokenResult->plainTextToken;
 
         
         $tokenResult->accessToken->expires_at = now()->addHours(2);
@@ -42,7 +42,7 @@ class AuthController extends Controller
 
      // Logout method
     public function logout(Request $request)
-    {
+    {   
         // Revoke current token
         $request->user()->currentAccessToken()->delete();
 

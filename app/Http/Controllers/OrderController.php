@@ -51,18 +51,18 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        
         $request->validate([
             'restaurant_id' => 'required|exists:restaurants,id',
             'containers' => 'required|array',
             'containers.*.id' => 'required|exists:containers,id',
             'containers.*.quantity' => 'required|integer|min:1',
         ]);
-        
         // Ensure user is linked to restaurant (authorization)
-        $restaurant = auth()->user()->restaurants()->findOrFail($request->restaurant_id);
+        $restaurant = auth()->user()->restaurants()->find($request->restaurant_id);
 
         if (!$restaurant) {
-            return response()->json(['error' => 'Unauthorized user.'], 403);
+            return response()->json(['error' => 'Unauthorized or restaurant not found.'], 403);
         }
         // Create order
         $order = Order::create([

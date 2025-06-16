@@ -12,10 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('delivery_containers', function (Blueprint $table) {
-            // Then add the new foreign key constraint
-            $table->foreign('delivery_id')
-                  ->references('id')->on('orders')
-                  ->onDelete('cascade'); // or SET NULL, RESTRICT etc.
+
         });
     }
 
