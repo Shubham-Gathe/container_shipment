@@ -12,5 +12,9 @@ class Restaurant extends Model
     {
         return $this->belongsToMany(User::class, 'manager_restaurant')->withTimestamps();
     }
+    public function containerInventory()
+    {
+        return $this->hasMany(RestaurantContainerInventory::class);
+    }
 }
 

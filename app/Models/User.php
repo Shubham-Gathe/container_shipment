@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;  // add this line
-    use App\Notifications\ResetPasswordNotification;
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -40,6 +40,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Driver::class);
     }
+
     public function restaurants()
     {
         return $this->belongsToMany(Restaurant::class, 'manager_restaurant')->withTimestamps();

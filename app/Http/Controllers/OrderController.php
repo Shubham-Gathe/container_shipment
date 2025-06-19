@@ -85,7 +85,7 @@ class OrderController extends Controller
         $request->validate([
             'driver_id' => 'required|exists:drivers,id',
         ]);
-
+        
         // Fetch the order
         $order = Order::where('id', $orderId)->firstOrFail();
 
@@ -156,6 +156,23 @@ class OrderController extends Controller
         $order->status = $validated['status'];
         $order->save();
 
+        if($request->status == 'delivered'){
+            // Update container inventory for the restaurant
+            foreach($order->containers as $container){
+                $inventory = \App\Models\RestaurantContainerInventory::firstOrNew([
+                    'restaurant_id' => $order->restaurant_id,
+                    'container_id' => $container->id,
+                ]);
+                $restaurant = $order->restaurant_id;
+
+                $inventory->quantity += $container->pivot->quantity; // increase inventory by the quantity delivered
+                // Check if inventory is below the low stock threshold
+                if ($inventory->quantity < $inventory->low_stock_threshold) {
+                    \Log::warning("Container ID {$container->id} is below threshold for Restaurant ID {$restaurant->id}");
+                }
+                $inventory->save();
+            }
+        }
         return response()->json(['message' => 'Order status updated successfully.']);
     }
 }

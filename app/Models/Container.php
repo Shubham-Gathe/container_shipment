@@ -22,7 +22,7 @@ class Container extends Model
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'delivery_containers')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
+        ->withPivot('quantity')
+        ->withTimestamps();
     }
 }

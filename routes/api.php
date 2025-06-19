@@ -46,7 +46,7 @@ Route::middleware('auth:sanctum','role:admin,manager,driver','expire.sanctum')->
     Route::post('/order', [OrderController::class, 'store']);
     Route::put('/order/{container}', [OrderController::class, 'update']);
     Route::delete('/order/{container}', [OrderController::class, 'destroy']);
-    Route::post('/order/{container}/assign-driver', [OrderController::class, 'assignDriver']);
+    Route::post('/order/{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
 });
 
 Route::middleware('auth:sanctum','role:driver','expire.sanctum')->group(function(){

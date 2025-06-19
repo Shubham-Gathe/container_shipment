@@ -35,7 +35,7 @@ class ContainerController extends Controller
             'type' => 'required',
         ]);
        
-       
+        
         return Container::create($validated);
     }
 
