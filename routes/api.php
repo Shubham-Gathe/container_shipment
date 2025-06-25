@@ -24,8 +24,7 @@ Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function 
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
-   
+    Route::delete('/users/{user}', [UserController::class, 'destroy']); 
 });
 
 Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function () {
@@ -47,6 +46,8 @@ Route::middleware('auth:sanctum','role:admin,manager,driver','expire.sanctum')->
     Route::put('/order/{container}', [OrderController::class, 'update']);
     Route::delete('/order/{container}', [OrderController::class, 'destroy']);
     Route::post('/order/{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
+    Route::post('/order/{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
+    Route::get('/orders/history', [OrderController::class, 'orderHistory']);
 });
 
 Route::middleware('auth:sanctum','role:driver','expire.sanctum')->group(function(){

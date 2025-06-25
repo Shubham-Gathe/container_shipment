@@ -175,4 +175,44 @@ class OrderController extends Controller
         }
         return response()->json(['message' => 'Order status updated successfully.']);
     }
+    public function orderHistory(Request $request)
+    {
+        $user = auth()->user();
+        $query = Order::with('containers');
+
+        // Role-based filtering
+        if ($user->role === 'admin') {
+            // Admin sees all orders
+        } elseif ($user->role === 'manager') {
+            $restaurantIds = $user->managedRestaurants->pluck('id');
+            $query->whereIn('restaurant_id', $restaurantIds);
+        } elseif ($user->role === 'driver') {
+            $driver = $user->driver->id ?? null;
+            if (!$driver) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+            $query->where('driver_id', $driver);
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Filter by date range if provided
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->input('start_date'),
+                $request->input('end_date')
+            ]);
+        }
+
+        // Filter by order status if provided
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Fetch and return orders
+        $orders = $query->get();
+
+        return OrderResource::collection($orders);
+    }
+
 }
