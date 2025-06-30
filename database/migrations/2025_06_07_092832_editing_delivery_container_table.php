@@ -23,7 +23,7 @@ return new class extends Migration
     {
         Schema::table('delivery_containers', function (Blueprint $table) {
             $table->dropForeign(['delivery_id']);
-
+ 
             // Optional: Revert to previous behavior if different    
             $table->foreign('delivery_id')->references('id')->on('deliveries');
         });

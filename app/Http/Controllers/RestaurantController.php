@@ -11,10 +11,29 @@ class RestaurantController extends Controller
     public function index()
     {
         $restaurants = Restaurant::all(); // or with pagination
+        $user = auth()->user();
+        // If the user is a manager, filter restaurants by those they manage
+        if ($user->role === 'manager') {
+            $restaurantIds = $user->managedRestaurants->pluck('id');
+            $restaurants = Restaurant::whereIn('id', $restaurantIds)->get();
+        } elseif ($user->role === 'driver') {
+            // If the user is a driver, you might want to return only the restaurants they are assigned to
+            $restaurantIds = $user->assignedRestaurants->pluck('id');
+            $restaurants = Restaurant::whereIn('id', $restaurantIds)->get();
+        } elseif ($user->role !== 'admin') {    
+            // If the user is not an admin, manager, or driver, return an empty collection
+            $restaurants = collect();
+        }
         return response()->json($restaurants);
     }
    public function store(Request $request)
     {
+        $user = auth()->user();
+        // Check if the user is an admin
+        if ($user->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'nullable|string',
@@ -33,7 +52,25 @@ class RestaurantController extends Controller
     }
     public function update(Request $request, $id)
     {
+        $user = auth()->user();
+
+        // First, find the restaurant
         $restaurant = Restaurant::findOrFail($id);
+
+        // Admins can update any restaurant
+        if ($user->role === 'admin') {
+            // Proceed
+        }
+        // Managers can update only their assigned restaurants
+        elseif ($user->role === 'manager') {
+            if (!$user->managedRestaurants->contains('id', $restaurant->id)) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+        }
+        // All other users are unauthorized
+        else {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -51,8 +88,14 @@ class RestaurantController extends Controller
             'data' => $restaurant,
         ]);
     }
+
     public function destroy($id)
     {
+        $user = auth()->user();
+        // Check if the user is an admin
+        if ($user->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
         $restaurant = Restaurant::findOrFail($id);
         $restaurant->delete();
         return response()->json(['message' => 'Restaurant deleted successfully.']);  

@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function 
     Route::delete('/users/{user}', [UserController::class, 'destroy']); 
 });
 
-Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function () {
+Route::middleware('auth:sanctum','role:admin,manager','expire.sanctum')->group(function () {
     Route::post('/addRestaurants', [RestaurantController::class,'store']);
     Route::get('/restaurants', [RestaurantController::class, 'index']);
     Route::put('/restaurants/{id}', [RestaurantController::class, 'update']);
@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum','role:admin','expire.sanctum')->group(function 
 Route::middleware('auth:sanctum','role:admin,manager','expire.sanctum')->group(function () {
     Route::apiResource('containers', ContainerController::class);
 });
+
+// rest inventory 
 
 Route::middleware('auth:sanctum','role:admin,manager,driver','expire.sanctum')->group(function () {
     Route::get('/order', [OrderController::class, 'index']);
